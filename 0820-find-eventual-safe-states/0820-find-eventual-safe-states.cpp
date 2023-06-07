@@ -1,33 +1,33 @@
 class Solution {
-    private:
-    bool dfs(vector<vector<int>>& graph, vector<int> &vis, vector<int> &pathVis, vector<int> &checked, int node){
-        vis[node]=1;
-        pathVis[node]=1;
-        checked[node]=0;
-        for(auto it:graph[node]){
-            if(!vis[it]){
-                if(dfs(graph, vis, pathVis, checked, it)==true)return true;
-            }
-            else if(pathVis[it]==1)return true;
-        }
-        pathVis[node]=0;
-        checked[node]=1;
-        return false;
-    }
 public:
     vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
         int n=graph.size();
-        vector<int>vis(n,0);
-        vector<int>pathVis(n,0);
-        vector<int>checked(n,0);
+        vector<int>adj[n];
+        vector<int>indegre(n,0);
+        for(int i=0;i<n;i++){
+            for(auto it:graph[i]){
+                adj[it].push_back(i);
+                indegre[i]++;
+            }
+        }
+        queue<int>q;
+        for(int i=0;i<n;i++){
+            if(indegre[i]==0){
+                q.push(i);
+            }
+        }
         vector<int>ans;
-        for(int i=0;i<n;i++){
-            dfs(graph, vis, pathVis, checked, i);
+        while(q.size()){
+            int node=q.front();
+            q.pop();
+            ans.push_back(node);
+
+            for(auto it:adj[node]){
+                indegre[it]--;
+                if(indegre[it]==0)q.push(it);
+            }
         }
-        for(int i=0;i<n;i++){
-            if(checked[i]==1)
-               ans.push_back(i);
-        }
+        sort(ans.begin(),ans.end());
         return ans;
     }
 };
